@@ -1,0 +1,371 @@
+<html lang="es"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verificador de Códigos | Notaría Ignacia Salcedo Ramírez</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #fff7cc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .loader-screen {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background-color: #ffcc00;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 1s ease;
+    }
+    .loader-circle {
+      border: 5px solid #fff;
+      border-top: 5px solid #333;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 15px;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .container {
+      background: #fff;
+      padding: 30px;
+      border: 3px solid #ffcc00;
+      border-radius: 15px;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+      display: none;
+    }
+    h1 { font-size: 26px; color: #d4a800; margin-bottom: 10px; }
+    input {
+      width: 100%; padding: 12px; border: 2px solid #ffcc00;
+      border-radius: 6px; font-size: 16px; margin-bottom: 15px;
+      text-transform: uppercase;
+    }
+    button {
+      width: 100%; padding: 12px; background: #ffd700;
+      color: #333; font-weight: bold; border: none; border-radius: 6px;
+      cursor: pointer; transition: transform 0.3s, background 0.3s;
+    }
+    button:hover { background: #ffcc00; transform: scale(1.05); }
+    #result {
+      margin-top: 15px; padding: 10px; border-radius: 6px;
+      display: none; font-weight: bold;
+    }
+    .valid { background-color: #d4edda; color: #155724; }
+    .invalid { background-color: #f8d7da; color: #721c24; }
+    .loading { background-color: #fff3cd; color: #856404; }
+    .certificado {
+      margin-top: 20px;
+      background: #fefefe;
+      padding: 20px;
+      border: 2px dashed #d4a800;
+      border-radius: 10px;
+      text-align: left;
+      font-size: 14px;
+    }
+    .certificado h2 { color: #4caf50; margin-bottom: 10px; text-align: center; }
+    .certificado p { margin-bottom: 6px; }
+    .contacto {
+      display: flex; justify-content: center; gap: 10px; margin: 20px 0;
+    }
+    .contacto a {
+      display: flex; align-items: center; gap: 8px;
+      text-decoration: none; padding: 12px 15px;
+      border-radius: 6px; font-weight: bold; color: white;
+    }
+    .correo { background-color: #ffcc00; color: #333; }
+    .whatsapp { background-color: #25D366; color: white; }
+    .faq {
+      background-color: #fff; border: 2px solid #ffcc00;
+      border-radius: 10px; padding: 20px; margin-top: 20px;
+      max-width: 800px;
+    }
+    .faq h2 { text-align: center; color: #d4a800; margin-bottom: 15px; }
+    .faq details { margin-bottom: 10px; }
+    .faq summary {
+      cursor: pointer; font-weight: bold; color: #d4a800;
+    }
+    .faq p { margin-top: 5px; font-size: 14px; color: #555; }
+  </style>
+</head>
+<body>
+<audio id="loader-sound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5e8d46a306.mp3?filename=calm-loading-110874.mp3" preload="auto"></audio>
+<div class="loader-screen" id="loader" style="opacity: 0; display: none;">
+  <div class="loader-circle"></div>
+  Cargando Validador de Documentos Notariales...
+</div>
+<div class="container" id="mainContent" style="display: block;">
+  <h1>Notaria Ignacia Salcedo Ramirez</h1>
+  <p>Ingrese el código de verificación:</p>
+  <input type="text" id="codeInput" placeholder="Ej: ABC123">
+  <button onclick="checkCode()">Verificar Código</button>
+  <div id="result"></div>
+  <div class="contacto">
+    <a href="mailto:notariasalcedoramirez@gmail.com" class="correo">
+      <i class="fa fa-envelope"></i> Correo
+    </a>
+    <a href="tel:+56224993685" class="whatsapp">
+      <i class="fa fa-phone"></i> Teléfono
+    </a>
+  </div>
+</div>
+<div class="faq">
+  <h2>Preguntas Frecuentes</h2>
+  <details><summary>¿Qué es un código de verificación notarial?</summary><p>Es un código único asociado a un documento emitido por la notaría. Permite verificar la autenticidad del instrumento público o protocolar.</p></details>
+  <details><summary>¿Dónde encuentro el código?</summary><p>El código se encuentra impreso en la parte inferior del documento notarial o en el reverso, junto a un código QR en algunos casos.</p></details>
+  <details><summary>¿Qué tipo de documentos puedo validar aquí?</summary><p>Puede verificar escrituras, mandatos, declaraciones juradas, poderes, contratos y otros instrumentos autorizados por esta notaría.</p></details>
+  <details><summary>¿Qué significa si el código no es válido?</summary><p>Puede deberse a un error de digitación o a que el documento no fue emitido por esta notaría. En caso de duda, contáctenos para más información.</p></details>
+  <details><summary>¿Este sistema reemplaza el documento físico?</summary><p>No. Este sistema es complementario y sirve únicamente como método de verificación. El documento físico sigue siendo el oficial.</p></details>
+  <details><summary>¿Puedo presentar documentos notariales en formato digital?</summary><p>Algunos documentos pueden presentarse digitalmente si la legislación y el receptor lo permiten. Siempre es recomendable verificar con la institución que exige el documento.</p></details>
+  <details><summary>¿Dónde se ubica la notaría?</summary><p>Estamos en Esmeralda 1463, departamento 314, comuna de Renca, Región Metropolitana, Chile.</p></details>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const loader = document.getElementById("loader");
+    const main = document.getElementById("mainContent");
+    const sound = document.getElementById("loader-sound");
+    sound.play().catch(() => {});
+    setTimeout(() => {
+      loader.style.opacity = "0";
+      setTimeout(() => {
+        loader.style.display = "none";
+        main.style.display = "block";
+      }, 1000);
+    }, 3000);
+  });
+
+  const documentos = {
+    "01848785007": {
+      documento: "Escritura pública de poder especial para representación, administración, conducción y trámites relativos a vehículo motorizado",
+      "notario firmante": "Ignacia Salcedo Ramírez",
+      "fecha de emision": "25 de Julio de 2025",
+      "fecha de vencimiento": "25 de Julio de 2026",
+      hora: "10:03",
+      estado: "VÁLIDO",
+      mandante: "JESÚS ALBERTO ÁLVAREZ PÉREZ",
+      mandatario: "MATIAS IVAN GARCIA FLORES",
+      "Certificado N°": "01345689009",
+      "Código de Verificación": "01848785007",
+      "Estado del Documento": "Activo y Vigente",
+      "Ubicación": "Renca",
+      "PROTOCOLIZADO N°": "45.742/2025",
+      "REPERTORIO N°": "98.316/2025 de 10/04/2025"
+    },
+
+"01848726592": {
+      documento: "Escritura pública de poder especial para cobro de acreencias bancarias",
+      "notario firmante": "Ignacia Salcedo Ramírez",
+      "fecha de emision": "10 de abril de 2025",
+      "fecha de vencimiento": "10 de abril de 2026",
+      hora: "12:32",
+      estado: "VÁLIDO",
+      mandante: "Carlos Roberto Bugueño Carvajal",
+      mandatario: "Leonardo Diego Fernández Contreras",
+      "Certificado N°": "0959827582",
+      "Código de Verificación": "01848726592",
+      "Estado del Documento": "Activo y Vigente",
+      "Ubicación": "Renca",
+      "PROTOCOLIZADO N°": "828/2025",
+      "REPERTORIO N°": "5412/2025 de 10/04/2025"
+},
+
+"01848785396": {
+      documento: "Escritura pública de poder especial para cobro de acreencias bancarias",
+      "notario firmante": "Ignacia Salcedo Ramírez",
+      "fecha de emision": "10 de abril de 2025",
+      "fecha de vencimiento": "10 de abril de 2026",
+      hora: "12:32",
+      estado: "VÁLIDO",
+      mandante: "Carlos Roberto Donoso Muñoz",
+      mandatario: "Leonardo Diego Fernández Contreras",
+      "Certificado N°": "013456834563",
+      "Código de Verificación": "01848785396",
+      "Estado del Documento": "Activo y Vigente",
+      "Ubicación": "Renca",
+      "PROTOCOLIZADO N°": "832/2025",
+      "REPERTORIO N°": "5418/2025 de 10/04/2025"
+},
+
+"01848785003": {
+      documento: "Escritura pública de poder especial para cobro de acreencias bancarias",
+      "notario firmante": "Ignacia Salcedo Ramírez",
+      "fecha de emision": "10 de abril de 2025",
+      "fecha de vencimiento": "10 de abril de 2026",
+      hora: "12:32",
+      estado: "VÁLIDO",
+      mandante: "Miguel Angel Vizama Astrada",
+      mandatario: "Leonardo Diego Fernández Contreras",
+      "Certificado N°": "01345689003",
+      "Código de Verificación": "01848785003",
+      "Estado del Documento": "Activo y Vigente",
+      "Ubicación": "Renca",
+      "PROTOCOLIZADO N°": "836/2025",
+      "REPERTORIO N°": "5421/2025 de 10/04/2025"
+},
+
+"01848785004": {
+      documento: "Escritura pública de poder especial para cobro de acreencias bancarias",
+      "notario firmante": "Ignacia Salcedo Ramírez",
+      "fecha de emision": "10 de abril de 2025",
+      "fecha de vencimiento": "10 de abril de 2026",
+      hora: "12:32",
+      estado: "VÁLIDO",
+      mandante: "Miguel Angel Zamora Hermosilla",
+      mandatario: "Leonardo Diego Fernández Contreras",
+      "Certificado N°": "01345689004",
+      "Código de Verificación": "01848785004",
+      "Estado del Documento": "Activo y Vigente",
+      "Ubicación": "Renca",
+      "PROTOCOLIZADO N°": "837/2025",
+      "REPERTORIO N°": "5422/2025 de 10/04/2025"
+},
+
+"01848785005": {
+      documento: "Escritura pública de poder especial para cobro de acreencias bancarias",
+      "notario firmante": "Ignacia Salcedo Ramírez",
+      "fecha de emision": "10 de abril de 2025",
+      "fecha de vencimiento": "10 de abril de 2026",
+      hora: "12:32",
+      estado: "VÁLIDO",
+      mandante: "David Eduardo Reyes Jofre",
+      mandatario: "Leonardo Diego Fernández Contreras",
+      "Certificado N°": "01345689005",
+      "Código de Verificación": "01848785005",
+      "Estado del Documento": "Activo y Vigente",
+      "Ubicación": "Renca",
+      "PROTOCOLIZADO N°": "838/2025",
+      "REPERTORIO N°": "5423/2025 de 10/04/2025"
+},
+
+"01848785006": {
+      documento: "Escritura pública de poder especial para cobro de fondos bancarios",
+      "notario firmante": "Ignacia Salcedo Ramírez",
+      "fecha de emision": "10 de abril de 2025",
+      "fecha de vencimiento": "10 de abril de 2026",
+      hora: "12:32",
+      estado: "VÁLIDO",
+      mandante: "Héctor Diego Bastias Madariaga",
+      mandatario: "Christian Andrés Muñoz Palacios",
+      "Certificado N°": "01345689006",
+      "Código de Verificación": "01848785006",
+      "Estado del Documento": "Activo y Vigente",
+      "Ubicación": "Renca",
+      "PROTOCOLIZADO N°": "45.698/2025",
+      "REPERTORIO N°": "98.245/2025 de 10/04/2025"
+},
+
+"01848785002": {
+      documento: "Escritura pública de poder especial para cobro de acreencias bancarias",
+      "notario firmante": "Ignacia Salcedo Ramírez",
+      "fecha de emision": "10 de abril de 2025",
+      "fecha de vencimiento": "10 de abril de 2026",
+      hora: "12:32",
+      estado: "VÁLIDO",
+      mandante: "Miguel Américo Vargas Vargas",
+      mandatario: "Leonardo Diego Fernández Contreras",
+      "Certificado N°": "01345689002",
+      "Código de Verificación": "01848785002",
+      "Estado del Documento": "Activo y Vigente",
+      "Ubicación": "Renca",
+      "PROTOCOLIZADO N°": "835/2025",
+      "REPERTORIO N°": "5420/2025 de 10/04/2025"
+},
+
+"01848785008": {
+      documento: "Escritura pública de poder especial para cobro de acreencias bancarias",
+      "notario firmante": "Ignacia Salcedo Ramírez",
+      "fecha de emision": "10 de abril de 2025",
+      "fecha de vencimiento": "10 de abril de 2026",
+      hora: "12:32",
+      estado: "VÁLIDO",
+      mandante: "Nicolás Gonzalo Constanzo Burgos",
+      mandatario: "Christian Andrés Muñoz Palacios",
+      "Certificado N°": "01345689008",
+      "Código de Verificación": "01848785008",
+      "Estado del Documento": "Activo y Vigente",
+      "Ubicación": "Renca",
+      "PROTOCOLIZADO N°": "45.743/2025",
+      "REPERTORIO N°": "98.317/2025 de 10/04/2025"
+},
+
+"01848785009": {
+      documento: "Escritura pública de poder especial para cobro de acreencias bancarias",
+      "notario firmante": "Ignacia Salcedo Ramírez",
+      "fecha de emision": "10 de abril de 2025",
+      "fecha de vencimiento": "10 de abril de 2026",
+      hora: "12:32",
+      estado: "VÁLIDO",
+      mandante: "Gonzalo Rodolfo Condon Valenzuela",
+      mandatario: "Christian Andrés Muñoz Palacios",
+      "Certificado N°": "01345689009",
+      "Código de Verificación": "01848785009",
+      "Estado del Documento": "Activo y Vigente",
+      "Ubicación": "Renca",
+      "PROTOCOLIZADO N°": "45.744/2025",
+      "REPERTORIO N°": "98.318/2025 de 10/04/2025"
+}
+  };
+
+  function checkCode() {
+    const code = document.getElementById("codeInput").value.trim().toUpperCase();
+    const result = document.getElementById("result");
+
+    result.className = "loading";
+    result.textContent = "Buscando en base de datos de Notaría Ignacia Salcedo Ramírez...";
+    result.style.display = "block";
+
+    setTimeout(() => {
+      if (documentos[code]) {
+        const doc = documentos[code];
+        result.className = "valid";
+        result.innerHTML = `
+          <div class="certificado">
+            <h2>Certificado Digital - Firma Electrónica Avanzada</h2>
+            <p><strong>Documento:</strong> ${doc.documento}</p>
+            <p><strong>Notario Firmante:</strong> ${doc["notario firmante"]}</p>
+            <p><strong>Fecha de Emisión:</strong> ${doc["fecha de emision"]}</p>
+            <p><strong>Hora:</strong> ${doc.hora}</p>
+            <p><strong>Fecha de Vencimiento:</strong> ${doc["fecha de vencimiento"]}</p>
+            <p><strong>Mandante:</strong> ${doc.mandante}</p>
+            <p><strong>Mandatario:</strong> ${doc.mandatario}</p>
+            <p><strong>Certificado N°:</strong> ${doc["Certificado N°"]}</p>
+            <p><strong>Código de Verificación:</strong> ${doc["Código de Verificación"]}</p>
+            <p><strong>Estado del Documento:</strong> ${doc["Estado del Documento"]}</p>
+            <p><strong>Ubicación:</strong> ${doc["Ubicación"]}</p>
+            <p><strong>Protocolizado N°:</strong> ${doc["PROTOCOLIZADO N°"]}</p>
+            <p><strong>Repertorio N°:</strong> ${doc["REPERTORIO N°"]}</p>
+            <p style="font-size: 12px; color: #555; margin-top: 10px;">
+              El presente certificado ha sido generado conforme a los lineamientos de la Ley N° 19.799 sobre Firma Electrónica en Chile, incorporando elementos de autenticación documental que reflejan estándares utilizados en entornos notariales y administrativos.
+            </p>
+          </div>
+        `;
+      } else {
+        result.className = "invalid";
+        result.textContent = "Código no encontrado o inválido.";
+      }
+    }, 3000);
+  }
+</script>
+
+
+
+</body></html>
